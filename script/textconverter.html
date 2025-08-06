@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+ <title>TBtools</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+    color: #f0f0f0;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  h1 {
+    text-align: center;
+    padding: 20px;
+    font-size: 32px;
+    border-bottom: 2px solid #333;
+  }
+
+  h2 {
+    text-align: center;
+    margin-top: 20px;
+    font-weight: 600;
+  }
+
+  .section {
+    display: none;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .section.active {
+    display: block;
+  }
+
+  .button {
+    display: block;
+    width: 80%;
+    margin: 15px auto;
+    padding: 14px;
+    font-size: 16px;
+    background: #1f1f1f;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+  }
+
+  .button:hover {
+    background: #292929;
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+  }
+
+  .back-btn {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    font-size: 26px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+  }
+
+  .input-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+  }
+
+  .input-box {
+    text-align: center;
+    margin: 10px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+
+  input, textarea, select {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #444;
+    background-color: #111;
+    color: white;
+    font-size: 15px;
+    width: 100%;
+    max-width: 500px;
+    outline: none;
+    transition: 0.2s ease;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: white;
+    background-color: #1a1a1a;
+  }
+
+  textarea {
+    resize: none;
+    height: 100px;
+    margin-top: 20px;
+  }
+
+  .output-box {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 20px;
+    color: white;
+    font-size: 15px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  .nav {
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    padding: 15px 0;
+    border-bottom: 2px solid #333;
+  }
+
+  .nav div {
+    margin: 0 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    position: relative;
+    color: white;
+    padding-bottom: 5px;
+  }
+
+  .nav div.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: white;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  #boardContainer div {
+  user-select: none;
+}
+
+#boardContainer {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin: 20px auto;
+  max-width: 100vw;
+  touch-action: manipulation;
+}
+</style>
+</head>
+
+ <div id="mainMenu" class="section active">
+     <button class="button" onclick="openSection('base64 conv')">base64</button>
+     <button class="button" onclick="openSection('base32 conv')">base32</button>
+     <button class="button" onclick="openSection('base16 conv')">base16</button>
+     <button class="button" onclick="openSection('binary conv')">binary</button>
+     <button class="button" onclick="openSection('hex conv')">hexadecimal</button>
+     <button class="button" onclick="openSection('octal conv')">octal</button>
+     <button class="button" onclick="openSection('morse conv')">code morse</button>
+     <button class="button" onclick="openSection('rot13 conv')">ROT13</button>
+      <h2 style="text-align:center; margin-top:20px;"></h2>
+ </div>
+
+<!-- base64  -->
+	<div id="base64 conv" class="section">
+  <div class="back-btn" onclick="backToMain()">&#60;</div>
+  <div class="nav">
+    <div id="base64EncodeTab" class="active">Encode</div>
+    <div id="base64DecodeTab">Decode</div>
+  </div>
+  <div class="container">
+    <div id="base64EncodeMode">
+      <div style="text-align:center;">Convert Text to Base64</div>
+      <textarea id="base64TextInput" placeholder="Enter plain text..."></textarea>
+      <br>
+      <button class="button" onclick="convertToBase64()">Convert</button>
+      <button class="button" id="copyBase64Btn" onclick="copyResult('base64Result','copyBase64Btn')">Copy</button>
+      <div id="base64Result" class="output-box"></div>
+    </div>
+    <div id="base64DecodeMode" class="hidden">
+      <div style="text-align:center;">Convert Base64 to Text</div>
+      <textarea id="base64CodeInput" placeholder="Masukkan kode base64..."></textarea>
+      <br>
+      <button class="button" onclick="convertFromBase64()">Convert</button>
+      <button class="button" id="copyBase64DecodeBtn" onclick="copyResult('base64DecodeResult','copyBase64DecodeBtn')">Copy</button>
+      <div id="base64DecodeResult" class="output-box"></div>
+    </div>
+  </div>
+</div>
+
+<!-- binary  -->
+	<div id="binary conv" class="section">
+  <div class="back-btn" onclick="backToMain()">&#60;</div>
+  <div class="nav">
+    <div id="binaryEncodeTab" class="active">Encode</div>
+    <div id="binaryDecodeTab">Decode</div>
+  </div>
+  <div class="container">
+    <div id="binaryEncodeMode">
+      <div style="text-align:center;">Convert Text to Binary</div>
+      <textarea id="binaryTextInput" placeholder="Masukkan teks..."></textarea>
+      <br>
+      <button class="button" onclick="convertToBinary()">Convert</button>
+      <button class="button" id="copyBinaryBtn" onclick="copyResult('binaryResult','copyBinaryBtn')">Copy</button>
+      <div id="binaryResult" class="output-box"></div>
+    </div>
+    <div id="binaryDecodeMode" class="hidden">
+      <div style="text-align:center;">Convert Binary to Text</div>
+      <textarea id="binaryCodeInput" placeholder="Masukkan kode biner (pisah spasi)..."></textarea>
+      <br>
+      <button class="button" onclick="convertFromBinary()">Convert</button>
+      <button class="button" id="copyBinaryDecodeBtn" onclick="copyResult('binaryDecodeResult','copyBinaryDecodeBtn')">Copy</button>
+      <div id="binaryDecodeResult" class="output-box"></div>
+    </div>
+  </div>
+</div>
+
+<!-- hex  -->
+	<div id="hex conv" class="section">
+  <div class="back-btn" onclick="backToMain()">&#60;</div>
+  <div class="nav">
+    <div id="hexEncodeTab" class="active">Encode</div>
+    <div id="hexDecodeTab">Decode</div>
+  </div>
+  <div class="container">
+    <div id="hexEncodeMode">
+      <div style="text-align:center;">Convert Text to Hex</div>
+      <textarea id="hexTextInput" placeholder="Masukkan teks..."></textarea>
+      <br>
+      <button class="button" onclick="convertToHex()">Convert</button>
+      <button class="button" id="copyHexBtn" onclick="copyResult('hexResult','copyHexBtn')">Copy</button>
+      <div id="hexResult" class="output-box"></div>
+    </div>
+    <div id="hexDecodeMode" class="hidden">
+      <div style="text-align:center;">Convert Hex to Text</div>
+      <textarea id="hexCodeInput" placeholder="Masukkan hex (pisah spasi)..."></textarea>
+      <br>
+      <button class="button" onclick="convertFromHex()">Convert</button>
+      <button class="button" id="copyHexDecodeBtn" onclick="copyResult('hexDecodeResult','copyHexDecodeBtn')">Copy</button>
+      <div id="hexDecodeResult" class="output-box"></div>
+    </div>
+  </div>
+</div>
+
+<!-- base16  -->
+	<div id="base16 conv" class="section">
+  <div class="back-btn" onclick="backToMain()">&#60;</div>
+  <div class="nav">
+    <div id="base16EncodeTab" class="active">Encode</div>
+    <div id="base16DecodeTab">Decode</div>
+  </div>
+  <div class="container">
+    <div id="base16EncodeMode">
+      <div style="text-align:center;">Convert Text to Base16</div>
+      <textarea id="base16TextInput" placeholder="Enter plain text..."></textarea>
+      <br>
+      <button class="button" onclick="convertToBase16()">Convert</button>
+      <button class="button" id="copyBase16Btn" onclick="copyResult('base16Result','copyBase16Btn')">Copy</button>
+      <div id="base16Result" class="output-box"></div>
+    </div>
+    <div id="base16DecodeMode" class="hidden">
+      <div style="text-align:center;">Convert Base16 to Text</div>
+      <textarea id="base16CodeInput" placeholder="Masukkan kode hex (pisah spasi)..."></textarea>
+      <br>
+      <button class="button" onclick="convertFromBase16()">Convert</button>
+      <button class="button" id="copyBase16DecodeBtn" onclick="copyResult('base16DecodeResult','copyBase16DecodeBtn')">Copy</button>
+      <div id="base16DecodeResult" class="output-box"></div>
+    </div>
+  </div>
+</div>
+
+<!-- base32  -->
+<div id="base32 conv" class="section">
+  <div class="back-btn" onclick="backToMain()">&#60;</div>
+  <div class="nav">
+    <div id="base32EncodeTab" class="active">Encode</div>
+    <div id="base32DecodeTab">Decode</div>
+  </div>
+  <div class="container">
+    <div id="base32EncodeMode">
+      <div style="text-align:center;">Convert Text to Base32</div>
+      <textarea id="base32TextInput" placeholder="Enter plain text..."></textarea>
+      <br>
+      <button class="button" onclick="convertToBase32()">Convert</button>
+      <button class="button" id="copyBase32Btn" onclick="copyResult('base32Result','copyBase32Btn')">Copy</button>
+      <div id="base32Result" class="output-box"></div>
+    </div>
+    <div id="base32DecodeMode" class="hidden">
+      <div style="text-align:center;">Convert Base32 to Text</div>
+      <textarea id="base32CodeInput" placeholder="Masukkan kode base32..."></textarea>
+      <br>
+      <button class="button" onclick="convertFromBase32()">Convert</button>
+      <button class="button" id="copyBase32DecodeBtn" onclick="copyResult('base32DecodeResult','copyBase32DecodeBtn')">Copy</button>
+      <div id="base32DecodeResult" class="output-box"></div>
+    </div>
+  </div>
+</div>
+
+<!-- uuid -->
+<div id="mcpe uuid" class="section">
+  <div class="back-btn" onclick="backToMain()">&#60;</div>
+  <h2 style="text-align:center; margin-top:40px;">UUID Generator for MCPE</h2>
+  
+  <div style="text-align:center; margin-top:30px;">
+    <div id="uuidOutput" class="output-box" style="margin-top:20px;">klik generate untuk menghasilkan uuid</div>
+    
+    <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+      <button class="button" onclick="showUUID()">Generate</button>
+      <button class="button" id="copyUUIDBtn" onclick="copyResult('uuidOutput','copyUUIDBtn')">Copy</button>
+    </div>
+  </div>
+</div>
+
+<!-- manifest resource json -->
+<div id="mcpe manifest" class="section">
+  <div class="back-btn" onclick="backToMain()">&#60;</div>
+  <h2 style="text-align:center;margin-top:20px;">Manifest Behavior Generator</h2>
+
+  <div class="input-group" style="flex-direction:column;align-items:center;">
+    <div class="input-box">
+      <label for="mf_name">Name</label>
+      <input type="text" id="mf_name" placeholder="Pack Name" />
+    </div>
+
+    <div class="input-box">
+      <label for="mf_desc">Description</label>
+      <input type="text" id="mf_desc" placeholder="Pack Description" />
+    </div>
+
+    <div class="input-box">
+      <label for="mf_version">Version (example: 1.0.0)</label>
+      <input type="text" id="mf_version" placeholder="1.0.0" />
+    </div>
+
+    <div class="input-box">
+      <label for="mf_mev">Min Engine Version (example: 1.20.60)</label>
+      <input type="text" id="mf_mev" placeholder="1.20.60" />
+    </div>
+
+    <div class="input-box" style="margin-top:20px;">
+      <button class="button" onclick="addSubpack()">+ Subpack</button>
+      <div id="subpackContainer" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="input-box" style="margin-top:10px;">
+      <button class="button" onclick="addLabel()">+ Label</button>
+      <div id="labelContainer" style="margin-top:10px;"></div>
+    </div>
+
+    <button class="button" onclick="generateManifest()" style="margin-top:20px;">Generate</button>
+  </div>
+
+  <div id="manifestResult" class="output-box" style="margin-top:20px;"></div>
+  <div style="text-align:center;margin-top:10px;">
+    <button class="button" id="copyManifestBtn" onclick="copyResult('manifestResult','copyManifestBtn')">Copy</button>
+    <button class="button" onclick="downloadManifest()">Download</button>
+  </div>
+</div>
+
+<!-- manifest behavior json -->
+<div id="mcpe manifestbehv" class="section">
+  <div class="back-btn" onclick="backToMain()">&#60;</div>
+  <h2 style="text-align:center;margin-top:20px;">Manifest Behavior Generator</h2>
+
+  <div class="input-group" style="flex-direction:column;align-items:center;">
+    <div class="input-box">
+      <label for="mf_namebehv">Name</label>
+      <input type="text" id="mf_namebehv" placeholder="Pack Name" />
+    </div>
+
+    <div class="input-box">
+      <label for="mf_descbehv">Description</label>
+      <input type="text" id="mf_descbehv" placeholder="Pack Description" />
+    </div>
+
+    <div class="input-box">
+      <label for="mf_versionbehv">Version (example: 1.0.0)</label>
+      <input type="text" id="mf_versionbehv" placeholder="1.0.0" />
+    </div>
+
+    <div class="input-box">
+      <label for="mf_mevbehv">Min Engine Version (example: 1.20.60)</label>
+      <input type="text" id="mf_mevbehv" placeholder="1.20.60" />
+    </div>
+
+    <div class="input-box" style="margin-top:20px;">
+      <button class="button" onclick="addSubpackBehv()">+ Subpack</button>
+      <div id="subpackContainerBehv" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="input-box" style="margin-top:10px;">
+      <button class="button" onclick="addLabelBehv()">+ Label</button>
+      <div id="labelContainerBehv" style="margin-top:10px;"></div>
+    </div>
+
+    <button class="button" onclick="generateManifestBehv()" style="margin-top:20px;">Generate</button>
+  </div>
+
+  <div id="manifestResultBehv" class="output-box" style="margin-top:20px;"></div>
+  <div style="text-align:center;margin-top:10px;">
+    <button class="button" id="copyManifestBtnBehv" onclick="copyResult('manifestResultBehv','copyManifestBtnBehv')">Copy</button>
+    <button class="button" onclick="downloadManifestBehv()">Download</button>
+  </div>
+</div>
+
+<!-- json validator -->
+<div id="mcpe jsonvalid" class="section">
+  <div class="back-btn" onclick="backToMain()">&#60;</div>
+  <h2 style="text-align:center; margin-top:20px;">JSON Validator</h2>
+
+  <div class="input-box" style="margin-top:20px;">
+    <label for="jsonInput">Paste your JSON here:</label>
+    <textarea id="jsonInput" placeholder="{ 'nama': 'TBtools' }"></textarea>
+  </div>
+
+  <button class="button" onclick="validateJson()">Validator</button>
+
+  <div id="jsonCopyWrapper" style="display:none; text-align:center; margin-top:10px;">
+    <button class="button" id="copyJsonBtn" onclick="copyResult('jsonResult','copyJsonBtn')">Copy</button>
+  </div>
+
+  <div id="jsonResult" class="output-box" style="display:none; margin-top:10px;"></div>
+</div>
+
+<!-- octal -->
+	<div id="octal conv" class="section">
+  <div class="back-btn" onclick="backToMain()">&#60;</div>
+  <div class="nav">
+    <div id="octalEncodeTab" class="active">Encode</div>
+    <div id="octalDecodeTab">Decode</div>
+  </div>
+  <div class="container">
+    <div id="octalEncodeMode">
+      <div style="text-align:center;">Convert Text to Octal</div>
+      <textarea id="octalTextInput" placeholder="Masukkan teks..."></textarea>
+      <br>
+      <button class="button" onclick="convertToOctal()">Convert</button>
+      <button class="button" id="copyOctalBtn" onclick="copyResult('octalResult','copyOctalBtn')">Copy</button>
+      <div id="octalResult" class="output-box"></div>
+    </div>
+    <div id="octalDecodeMode" class="hidden">
+      <div style="text-align:center;">Convert Octal to Text</div>
+      <textarea id="octalCodeInput" placeholder="Masukkan kode octal (pisah spasi)..."></textarea>
+      <br>
+      <button class="button" onclick="convertFromOctal()">Convert</button>
+      <button class="button" id="copyOctalDecodeBtn" onclick="copyResult('octalDecodeResult','copyOctalDecodeBtn')">Copy</button>
+      <div id="octalDecodeResult" class="output-box"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Morse  -->
+	<div id="morse conv" class="section">
+  <div class="back-btn" onclick="backToMain()">&#60;</div>
+  <div class="nav">
+    <div id="morseEncodeTab" class="active">Encode</div>
+    <div id="morseDecodeTab">Decode</div>
+  </div>
+  <div class="container">
+    <div id="morseEncodeMode">
+      <div style="text-align:center;">Convert Text to Morse</div>
+      <textarea id="morseTextInput" placeholder="Masukkan teks..."></textarea>
+      <br>
+      <button class="button" onclick="convertToMorse()">Convert</button>
+      <button class="button" id="copyMorseBtn" onclick="copyResult('morseResult','copyMorseBtn')">Copy</button>
+      <div id="morseResult" class="output-box"></div>
+    </div>
+    <div id="morseDecodeMode" class="hidden">
+      <div style="text-align:center;">Convert Morse to Text</div>
+      <textarea id="morseCodeInput" placeholder="Masukkan kode morse (pisah spasi)..."></textarea>
+      <br>
+      <button class="button" onclick="convertFromMorse()">Convert</button>
+      <button class="button" id="copyMorseDecodeBtn" onclick="copyResult('morseDecodeResult','copyMorseDecodeBtn')">Copy</button>
+      <div id="morseDecodeResult" class="output-box"></div>
+    </div>
+  </div>
+</div>
+
+<!-- rot13 -->
+	<div id="rot13 conv" class="section">
+  <div class="back-btn" onclick="backToMain()">&#60;</div>
+  <div class="nav">
+    <div id="rot13EncodeTab" class="active">Encode</div>
+    <div id="rot13DecodeTab">Decode</div>
+  </div>
+  <div class="container">
+    <div id="rot13EncodeMode">
+      <div style="text-align:center;">Convert Text to ROT13</div>
+      <textarea id="rot13TextInput" placeholder="Masukkan teks..."></textarea>
+      <br>
+      <button class="button" onclick="convertToRot13()">Convert</button>
+      <button class="button" id="copyRot13Btn" onclick="copyResult('rot13Result','copyRot13Btn')">Copy</button>
+      <div id="rot13Result" class="output-box"></div>
+    </div>
+    <div id="rot13DecodeMode" class="hidden">
+      <div style="text-align:center;">Convert ROT13 to Text</div>
+      <textarea id="rot13CodeInput" placeholder="Masukkan kode ROT13..."></textarea>
+      <br>
+      <button class="button" onclick="convertFromRot13()">Convert</button>
+      <button class="button" id="copyRot13DecodeBtn" onclick="copyResult('rot13DecodeResult','copyRot13DecodeBtn')">Copy</button>
+      <div id="rot13DecodeResult" class="output-box"></div>
+    </div>
+  </div>
+</div>
+
+ <script>
+document.getElementById('base64EncodeTab').onclick = () => {
+  document.getElementById('base64EncodeMode').classList.remove('hidden');
+  document.getElementById('base64DecodeMode').classList.add('hidden');
+  document.getElementById('base64EncodeTab').classList.add('active');
+  document.getElementById('base64DecodeTab').classList.remove('active');
+};
+
+document.getElementById('base64DecodeTab').onclick = () => {
+  document.getElementById('base64EncodeMode').classList.add('hidden');
+  document.getElementById('base64DecodeMode').classList.remove('hidden');
+  document.getElementById('base64EncodeTab').classList.remove('active');
+  document.getElementById('base64DecodeTab').classList.add('active');
+};
+
+function convertToBase64() {
+  const input = document.getElementById('base64TextInput').value;
+  const encoded = btoa(unescape(encodeURIComponent(input)));
+  document.getElementById('base64Result').textContent = encoded;
+}
+
+function convertFromBase64() {
+  const input = document.getElementById('base64CodeInput').value;
+  try {
+    const decoded = decodeURIComponent(escape(atob(input)));
+    document.getElementById('base64DecodeResult').textContent = decoded;
+  } catch (e) {
+    document.getElementById('base64DecodeResult').textContent = 'Invalid base64!';
+  }
+}
+
+document.getElementById('binaryEncodeTab').onclick = () => {
+  document.getElementById('binaryEncodeMode').classList.remove('hidden');
+  document.getElementById('binaryDecodeMode').classList.add('hidden');
+  document.getElementById('binaryEncodeTab').classList.add('active');
+  document.getElementById('binaryDecodeTab').classList.remove('active');
+};
+
+document.getElementById('binaryDecodeTab').onclick = () => {
+  document.getElementById('binaryEncodeMode').classList.add('hidden');
+  document.getElementById('binaryDecodeMode').classList.remove('hidden');
+  document.getElementById('binaryEncodeTab').classList.remove('active');
+  document.getElementById('binaryDecodeTab').classList.add('active');
+};
+
+function convertToBinary() {
+  const input = document.getElementById('binaryTextInput').value;
+  const binary = input.split('').map(char => {
+    return char.charCodeAt(0).toString(2).padStart(8, '0');
+  }).join(' ');
+  document.getElementById('binaryResult').textContent = binary;
+}
+
+function convertFromBinary() {
+  const input = document.getElementById('binaryCodeInput').value.trim();
+  try {
+    const text = input.split(' ').map(bin => {
+      return String.fromCharCode(parseInt(bin, 2));
+    }).join('');
+    document.getElementById('binaryDecodeResult').textContent = text;
+  } catch (e) {
+    document.getElementById('binaryDecodeResult').textContent = 'Invalid binary input!';
+  }
+}
+
+document.getElementById('hexEncodeTab').onclick = () => {
+  document.getElementById('hexEncodeMode').classList.remove('hidden');
+  document.getElementById('hexDecodeMode').classList.add('hidden');
+  document.getElementById('hexEncodeTab').classList.add('active');
+  document.getElementById('hexDecodeTab').classList.remove('active');
+};
+
+document.getElementById('hexDecodeTab').onclick = () => {
+  document.getElementById('hexEncodeMode').classList.add('hidden');
+  document.getElementById('hexDecodeMode').classList.remove('hidden');
+  document.getElementById('hexEncodeTab').classList.remove('active');
+  document.getElementById('hexDecodeTab').classList.add('active');
+};
+
+function convertToHex() {
+  const input = document.getElementById('hexTextInput').value;
+  const hex = input.split('').map(char => {
+    return char.charCodeAt(0).toString(16).padStart(2, '0');
+  }).join(' ');
+  document.getElementById('hexResult').textContent = hex;
+}
+
+function convertFromHex() {
+  const input = document.getElementById('hexCodeInput').value.trim();
+  try {
+    const text = input.split(' ').map(hex => {
+      return String.fromCharCode(parseInt(hex, 16));
+    }).join('');
+    document.getElementById('hexDecodeResult').textContent = text;
+  } catch (e) {
+    document.getElementById('hexDecodeResult').textContent = 'Invalid hex input!';
+  }
+}
+
+document.getElementById('base16EncodeTab').onclick = () => {
+  document.getElementById('base16EncodeMode').classList.remove('hidden');
+  document.getElementById('base16DecodeMode').classList.add('hidden');
+  document.getElementById('base16EncodeTab').classList.add('active');
+  document.getElementById('base16DecodeTab').classList.remove('active');
+};
+
+document.getElementById('base16DecodeTab').onclick = () => {
+  document.getElementById('base16EncodeMode').classList.add('hidden');
+  document.getElementById('base16DecodeMode').classList.remove('hidden');
+  document.getElementById('base16EncodeTab').classList.remove('active');
+  document.getElementById('base16DecodeTab').classList.add('active');
+};
+
+function convertToBase16() {
+  const input = document.getElementById('base16TextInput').value;
+  const hex = input.split('').map(char =>
+    char.charCodeAt(0).toString(16).padStart(2, '0')
+  ).join(' ');
+  document.getElementById('base16Result').textContent = hex;
+}
+
+function convertFromBase16() {
+  const input = document.getElementById('base16CodeInput').value.trim();
+  try {
+    const text = input.split(' ').map(hex =>
+      String.fromCharCode(parseInt(hex, 16))
+    ).join('');
+    document.getElementById('base16DecodeResult').textContent = text;
+  } catch (e) {
+    document.getElementById('base16DecodeResult').textContent = 'Invalid base16 input!';
+  }
+}
+
+document.getElementById('base32EncodeTab').onclick = () => {
+  document.getElementById('base32EncodeMode').classList.remove('hidden');
+  document.getElementById('base32DecodeMode').classList.add('hidden');
+  document.getElementById('base32EncodeTab').classList.add('active');
+  document.getElementById('base32DecodeTab').classList.remove('active');
+};
+
+document.getElementById('base32DecodeTab').onclick = () => {
+  document.getElementById('base32EncodeMode').classList.add('hidden');
+  document.getElementById('base32DecodeMode').classList.remove('hidden');
+  document.getElementById('base32EncodeTab').classList.remove('active');
+  document.getElementById('base32DecodeTab').classList.add('active');
+};
+
+function convertToBase32() {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  let input = unescape(encodeURIComponent(document.getElementById('base32TextInput').value));
+  let binary = '';
+  for (let i = 0; i < input.length; i++) {
+    binary += input.charCodeAt(i).toString(2).padStart(8, '0');
+  }
+  let result = '';
+  for (let i = 0; i < binary.length; i += 5) {
+    const chunk = binary.substring(i, i + 5);
+    if (chunk.length < 5) {
+      result += alphabet[parseInt(chunk.padEnd(5, '0'), 2)];
+    } else {
+      result += alphabet[parseInt(chunk, 2)];
+    }
+  }
+  document.getElementById('base32Result').textContent = result;
+}
+
+function convertFromBase32() {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  const input = document.getElementById('base32CodeInput').value.toUpperCase().replace(/[^A-Z2-7]/g, '');
+  let binary = '';
+  for (let i = 0; i < input.length; i++) {
+    const val = alphabet.indexOf(input[i]);
+    if (val === -1) continue;
+    binary += val.toString(2).padStart(5, '0');
+  }
+  let text = '';
+  for (let i = 0; i < binary.length; i += 8) {
+    const byte = binary.substring(i, i + 8);
+    if (byte.length === 8) {
+      text += String.fromCharCode(parseInt(byte, 2));
+    }
+  }
+  try {
+    document.getElementById('base32DecodeResult').textContent = decodeURIComponent(escape(text));
+  } catch (e) {
+    document.getElementById('base32DecodeResult').textContent = "Invalid base32 input!";
+  }
+}
+
+document.getElementById('octalEncodeTab').onclick = () => {
+  document.getElementById('octalEncodeMode').classList.remove('hidden');
+  document.getElementById('octalDecodeMode').classList.add('hidden');
+  document.getElementById('octalEncodeTab').classList.add('active');
+  document.getElementById('octalDecodeTab').classList.remove('active');
+};
+
+document.getElementById('octalDecodeTab').onclick = () => {
+  document.getElementById('octalEncodeMode').classList.add('hidden');
+  document.getElementById('octalDecodeMode').classList.remove('hidden');
+  document.getElementById('octalEncodeTab').classList.remove('active');
+  document.getElementById('octalDecodeTab').classList.add('active');
+};
+
+function convertToOctal() {
+  const input = document.getElementById('octalTextInput').value;
+  const octal = input.split('').map(char =>
+    char.charCodeAt(0).toString(8).padStart(3, '0')
+  ).join(' ');
+  document.getElementById('octalResult').textContent = octal;
+}
+
+function convertFromOctal() {
+  const input = document.getElementById('octalCodeInput').value.trim();
+  try {
+    const text = input.split(' ').map(oct =>
+      String.fromCharCode(parseInt(oct, 8))
+    ).join('');
+    document.getElementById('octalDecodeResult').textContent = text;
+  } catch (e) {
+    document.getElementById('octalDecodeResult').textContent = 'Invalid octal input!';
+  }
+}
+
+const morseMap = {
+  A: ".-",     B: "-...",   C: "-.-.",   D: "-..",
+  E: ".",      F: "..-.",   G: "--.",    H: "....",
+  I: "..",     J: ".---",   K: "-.-",    L: ".-..",
+  M: "--",     N: "-.",     O: "---",    P: ".--.",
+  Q: "--.-",   R: ".-.",    S: "...",    T: "-",
+  U: "..-",    V: "...-",   W: ".--",    X: "-..-",
+  Y: "-.--",   Z: "--..",
+  0: "-----",  1: ".----",  2: "..---",  3: "...--",
+  4: "....-",  5: ".....",  6: "-....",  7: "--...",
+  8: "---..",  9: "----.",
+  " ": "/",    ".": ".-.-.-", ",": "--..--"
+};
+
+const reverseMorseMap = Object.fromEntries(
+  Object.entries(morseMap).map(([k, v]) => [v, k])
+);
+
+document.getElementById('morseEncodeTab').onclick = () => {
+  document.getElementById('morseEncodeMode').classList.remove('hidden');
+  document.getElementById('morseDecodeMode').classList.add('hidden');
+  document.getElementById('morseEncodeTab').classList.add('active');
+  document.getElementById('morseDecodeTab').classList.remove('active');
+};
+
+document.getElementById('morseDecodeTab').onclick = () => {
+  document.getElementById('morseEncodeMode').classList.add('hidden');
+  document.getElementById('morseDecodeMode').classList.remove('hidden');
+  document.getElementById('morseEncodeTab').classList.remove('active');
+  document.getElementById('morseDecodeTab').classList.add('active');
+};
+
+function convertToMorse() {
+  const input = document.getElementById('morseTextInput').value.toUpperCase();
+  const morse = input.split('').map(c => morseMap[c] || '').join(' ');
+  document.getElementById('morseResult').textContent = morse.trim();
+}
+
+function convertFromMorse() {
+  const input = document.getElementById('morseCodeInput').value.trim();
+  const text = input.split(' ').map(code => reverseMorseMap[code] || '').join('');
+  document.getElementById('morseDecodeResult').textContent = text;
+}
+
+document.getElementById('rot13EncodeTab').onclick = () => {
+  document.getElementById('rot13EncodeMode').classList.remove('hidden');
+  document.getElementById('rot13DecodeMode').classList.add('hidden');
+  document.getElementById('rot13EncodeTab').classList.add('active');
+  document.getElementById('rot13DecodeTab').classList.remove('active');
+};
+
+document.getElementById('rot13DecodeTab').onclick = () => {
+  document.getElementById('rot13EncodeMode').classList.add('hidden');
+  document.getElementById('rot13DecodeMode').classList.remove('hidden');
+  document.getElementById('rot13EncodeTab').classList.remove('active');
+  document.getElementById('rot13DecodeTab').classList.add('active');
+};
+
+function rot13(text) {
+  return text.replace(/[a-zA-Z]/g, c => {
+    const base = c <= 'Z' ? 65 : 97;
+    return String.fromCharCode((c.charCodeAt(0) - base + 13) % 26 + base);
+  });
+}
+
+function convertToRot13() {
+  const input = document.getElementById('rot13TextInput').value;
+  const result = rot13(input);
+  document.getElementById('rot13Result').textContent = result;
+}
+
+function convertFromRot13() {
+  const input = document.getElementById('rot13CodeInput').value;
+  const result = rot13(input);
+  document.getElementById('rot13DecodeResult').textContent = result;
+}
+
+function openSection(id) {
+  document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function backToMain() {
+  document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+  document.getElementById('mainMenu').classList.add('active');
+}
+
+function copyResult(resultId, buttonId) {
+  const result = document.getElementById(resultId);
+  if (!result) return;
+
+  const range = document.createRange();
+  range.selectNodeContents(result);
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+
+  try {
+    document.execCommand("copy");
+    selection.removeAllRanges();
+    const btn = document.getElementById(buttonId);
+    if (btn) {
+      const original = btn.textContent;
+      btn.textContent = "Copied";
+      setTimeout(() => { btn.textContent = original; }, 1000);
+    }
+  } catch (e) {
+    console.error("Copy failed", e);
+  }
+}
+
+ </script>
+</body>
+</html>
