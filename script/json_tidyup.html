@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON Tidy Up</title>
+<style>
+
+  * {box-sizing: border-box;margin: 0;padding: 0;}
+  body {font-family: 'Segoe UI', Roboto, Arial, sans-serif;font-weight: bold;
+    background:linear-gradient(120deg, gray, black);
+    color: #f0f0f0;font-family: 'Inter', sans-serif;min-height: 100vh;padding-bottom: 60px;}
+  h1 {text-align: center;padding: 20px;font-size: 32px;border-bottom: 2px solid #333;}
+  .section {padding: 20px;animation: fadeIn 0.3s ease;}
+  .button {display: block;width: 80%;margin: 15px auto;padding: 14px;font-size: 16px;
+    background:linear-gradient(120deg, black, gray);color: white;border: 1px solid #444;
+    border-radius: 12px;cursor: pointer;text-align: center;transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);}
+  .button:hover {background: #292929;transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);}
+  input, textarea {padding: 12px;border-radius: 10px;border: 1px solid #444;
+    background-color: #111;color: white;font-size: 15px;width: 100%;max-width: 600px;outline: none;transition: 0.2s ease;}
+  input:focus, textarea:focus {border-color: white;background-color: #1a1a1a;}
+  textarea {resize: none;height: 200px;margin: 20px auto;display: block;}
+  .output-box {background: rgba(255, 255, 255, 0.05);border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);backdrop-filter: blur(8px);border-radius: 12px;
+    padding: 16px;margin-top: 20px;color: white;font-size: 15px;white-space: pre-wrap;word-break: break-word;
+    max-width: 600px;margin-left: auto;margin-right: auto;text-align: left;}
+  .error {color: red;text-align: center;margin-top: 5px;font-weight: normal;}
+  @keyframes fadeIn {from {opacity: 0;} to {opacity: 1;}}
+</style>
+</head>
+<body>
+
+<h1>JSON Tidy Up</h1>
+<div class="section">
+
+  <textarea id="jsonInput" placeholder="Paste your JSON here..."></textarea>
+  
+  <input type="file" id="fileInput" accept=".json" style="display:none;">
+  <button class="button" onclick="document.getElementById('fileInput').click()">Import File</button>
+  <div id="errorMsg" class="error"></div>
+
+  <button class="button" onclick="tidyUp()">Tidy Up</button>
+
+  <button id="copyBtn" class="button" style="display:none;" onclick="copyJSON()">Copy</button>
+
+  <div id="output" class="output-box" style="display:none;"></div>
+
+</div>
+
+<script>
+const jsonInput = document.getElementById('jsonInput');
+const fileInput = document.getElementById('fileInput');
+const errorMsg = document.getElementById('errorMsg');
+const outputBox = document.getElementById('output');
+const copyBtn = document.getElementById('copyBtn');
+
+fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    errorMsg.textContent = "";
+    if (!file) return;
+    if (!file.name.endsWith(".json")) {
+        errorMsg.textContent = "Can only import json files";
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        jsonInput.value = e.target.result;
+    };
+    reader.readAsText(file);
+});
+
+function tidyUp() {
+    try {
+        const parsed = JSON.parse(jsonInput.value);
+        const pretty = JSON.stringify(parsed, null, 2);
+        outputBox.textContent = pretty;
+        outputBox.style.display = 'block';
+        copyBtn.style.display = 'block';
+    } catch (e) {
+        errorMsg.textContent = "Invalid JSON format";
+    }
+}
+
+function copyJSON() {
+    navigator.clipboard.writeText(outputBox.textContent).then(() => {
+        copyBtn.textContent = "Copied";
+        setTimeout(() => copyBtn.textContent = "Copy", 1500);
+    });
+}
+</script>
+
+</body>
+</html>
