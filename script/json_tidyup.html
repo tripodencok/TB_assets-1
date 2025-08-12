@@ -135,9 +135,7 @@ fileInput.addEventListener('change', () => {
 });
 
 function removeComments(str) {
-  // Hapus /* ... */ multiline comments
   str = str.replace(/\/\*[\s\S]*?\*\//g, '');
-  // Hapus // comments (per baris)
   str = str.replace(/\/\/.*$/gm, '');
   return str;
 }
