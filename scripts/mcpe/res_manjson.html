@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Resource Manifest Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;font-weight: bold;
+    background: #1e1e1e;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  h1 {
+    text-align: center;
+    padding: 20px;
+    font-size: 32px;
+    border-bottom: 2px solid #333;
+  }
+
+  h2 {
+    text-align: center;
+    margin-top: 20px;
+    font-weight: 600;
+  }
+
+  .section {
+    display: none;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .section.active {
+    display: block;
+  }
+
+  .button {
+    display: block;
+    width: 80%;
+    margin: 15px auto;
+    padding: 14px;
+    font-size: 16px;
+    background: #2a2a2a;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+  }
+
+  .button:hover {
+    background: #292929;
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+  }
+
+  .back-btn {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    font-size: 26px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+  }
+
+  .input-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+  }
+
+  .input-box {
+    text-align: center;
+    margin: 10px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+
+  input, textarea, select {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #444;
+    background-color: #111;
+    color: white;
+    font-size: 15px;
+    width: 100%;
+    max-width: 500px;
+    outline: none;
+    transition: 0.2s ease;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: white;
+    background-color: #1a1a1a;
+  }
+
+  textarea {
+    resize: none;
+    height: 100px;
+    margin-top: 20px;
+  }
+
+  .output-box {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 20px;
+    color: white;
+    font-size: 15px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  .nav {
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    padding: 15px 0;
+    border-bottom: 2px solid #333;
+  }
+
+  .nav div {
+    margin: 0 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    position: relative;
+    color: white;
+    padding-bottom: 5px;
+  }
+
+  .nav div.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: white;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  #boardContainer div {
+  user-select: none;
+}
+
+#boardContainer {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin: 20px auto;
+  max-width: 100vw;
+  touch-action: manipulation;
+}
+</style>
+</head>
+<body  onload="openSection('mcpe manifestres')">
+
+<div id="mcpe manifestres" class="section">
+  <h2 style="text-align:center;margin-top:20px;">Manifest Resource Generator</h2>
+
+  <div class="input-group" style="flex-direction:column;align-items:center;">
+    <div class="input-box">
+      <label for="mf_name">Name</label>
+      <input type="text" id="mf_name" placeholder="Pack Name" />
+    </div>
+
+    <div class="input-box">
+      <label for="mf_desc">Description</label>
+      <input type="text" id="mf_desc" placeholder="Pack Description" />
+    </div>
+
+    <div class="input-box">
+      <label for="mf_version">Version (example: 1.0.0)</label>
+      <input type="text" id="mf_version" placeholder="1.0.0" />
+    </div>
+
+    <div class="input-box">
+      <label for="mf_mev">Min Engine Version (example: 1.20.60)</label>
+      <input type="text" id="mf_mev" placeholder="1.20.60" />
+    </div>
+
+    <div class="input-box" style="margin-top:20px;">
+      <button class="button" onclick="addSubpack()">+ Subpack</button>
+      <div id="subpackContainer" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="input-box" style="margin-top:10px;">
+      <button class="button" onclick="addLabel()">+ Label</button>
+      <div id="labelContainer" style="margin-top:10px;"></div>
+    </div>
+
+    <button class="button" onclick="generateManifest()" style="margin-top:20px;">Generate</button>
+  </div>
+
+  <div id="manifestResult" class="output-box" style="margin-top:20px;"></div>
+  <div style="text-align:center;margin-top:10px;">
+    <button class="button" id="copyManifestBtn" onclick="copyResult('manifestResult','copyManifestBtn')">Copy</button>
+    <button class="button" onclick="downloadManifest()">Download</button>
+  </div>
+</div>
+
+<script>
+
+function generateUUIDv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+function showUUID() {
+  const uuid = generateUUIDv4();
+  document.getElementById("uuidOutput").textContent = uuid;
+}
+
+function addSubpack() {
+  const container = document.createElement("div");
+  container.style.border = "2px solid white";
+  container.style.padding = "10px";
+  container.style.marginTop = "10px";
+  container.style.borderRadius = "8px";
+  container.style.position = "relative";
+
+  container.innerHTML = `
+    <button onclick="this.parentElement.remove()" style="position:absolute;top:-8px;left:-8px;background:red;color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;">❌</button>
+    <div class="input-box">
+      <label>Folder Name:</label>
+      <input type="text" placeholder="folder_name" class="subpack-folder" />
+    </div>
+    <div class="input-box">
+      <label>Name:</label>
+      <input type="text" placeholder="name" class="subpack-name" />
+    </div>
+  `;
+  document.getElementById("subpackContainer").appendChild(container);
+}
+
+function addLabel() {
+  const container = document.createElement("div");
+  container.style.border = "2px solid white";
+  container.style.padding = "10px";
+  container.style.marginTop = "10px";
+  container.style.borderRadius = "8px";
+  container.style.position = "relative";
+
+  container.innerHTML = `
+    <button onclick="this.parentElement.remove()" style="position:absolute;top:-8px;left:-8px;background:red;color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;">❌</button>
+    <div class="input-box">
+      <label>Label:</label>
+      <input type="text" placeholder="Label text" class="label-text" />
+    </div>
+  `;
+  document.getElementById("labelContainer").appendChild(container);
+}
+
+function generateManifest() {
+  const name = document.getElementById("mf_name").value.trim();
+  const desc = document.getElementById("mf_desc").value.trim();
+  const version = document.getElementById("mf_version").value.trim() || "1.0.1";
+  const mev = document.getElementById("mf_mev").value.trim() || "1,20,60";
+
+  if (!name || !desc) {
+    document.getElementById("manifestResult").textContent = "Nama atau Deskripsi kosong!";
+    return;
+  }
+
+  const uuid1 = generateUUIDv4();
+  const uuid2 = generateUUIDv4();
+
+  const manifest = {
+    format_version: 2,
+    header: {
+      name: name,
+      description: desc,
+      uuid: uuid1,
+      version: version.split('.').map(x => parseInt(x)),
+      min_engine_version: mev.split(',').map(x => parseInt(x))
+    },
+    modules: [{
+      type: "resources",
+      uuid: uuid2,
+      version: version.split('.').map(x => parseInt(x))
+    }]
+  };
+
+  const subpacks = [];
+  const folderEls = document.querySelectorAll(".subpack-folder");
+  const nameEls = document.querySelectorAll(".subpack-name");
+
+  for (let i = 0; i < folderEls.length; i++) {
+    const folder = folderEls[i].value.trim();
+    const sname = nameEls[i].value.trim();
+    if (folder || sname) {
+      subpacks.push({
+        folder_name: folder || "",
+        name: sname || "",
+        memory_tier: 0
+      });
+    }
+  }
+  if (subpacks.length) manifest.subpacks = subpacks;
+
+  const labels = [];
+  document.querySelectorAll(".label-text").forEach(el => {
+    const val = el.value.trim();
+    if (val) labels.push({ type: "label", text: val });
+  });
+  if (labels.length) manifest.settings = labels;
+
+  const json = `////Made by Tripodencok Webpage, if you want to delete this text, do it, no problem\n${JSON.stringify(manifest, null, 2)}`;
+  document.getElementById("manifestResult").textContent = json;
+}
+
+function downloadManifest() {
+  const content = document.getElementById("manifestResult").textContent;
+  if (!content || content.includes("kosong")) return;
+
+  const blob = new Blob([content], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "manifest.json";
+  link.click();
+}
+
+function copyResult(resultId,buttonId){
+ const text = document.getElementById(resultId).textContent;
+ if(!text)return;
+ navigator.clipboard.writeText(text).then(()=>{
+ if(buttonId === 'dummy')return;
+ const btn = document.getElementById(buttonId);
+ btn.textContent = "Copied";
+ setTimeout(()=>{
+ btn.textContent = "Copy";
+},1500);
+});
+}
+
+ function openSection(id) {
+  document.querySelectorAll('.section').forEach(sec => sec.style.display = 'none');
+  const target = document.getElementById(id);
+  if (target) {
+    target.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+ </script>
+</body>
+</html>
