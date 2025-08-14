@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tripodencok Schedule</title>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    font-weight: bold;
+    background: #1e1e1e;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+  h1 {
+    text-align: center;
+    padding: 20px;
+    font-size: 32px;
+    border-bottom: 2px solid #333;
+  }
+  .content {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+  }
+  .current-status {
+    text-align: center;
+    font-size: 24px;
+    margin: 20px 0 10px;
+  }
+  .divider {
+    height: 2px;
+    background-color: #333;
+    margin: 10px auto 20px;
+    max-width: 500px;
+  }
+  pre {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 15px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Tripodencok Schedule(time)</h1>
+<div class="content">
+  <div class="current-status">
+    Now tripodencok is <span id="activityText"></span>
+  </div>
+  <div class="divider"></div>
+  <pre>
+Tripodencok schedule:
+
+Monday 
+  00:00 : sleep 
+  06:00 : Get up
+  07:00 : school
+  15:00 : At home 
+  15:45 : offline 
+  18:00 : online 
+  22:00 : offline
+
+Tuesday 
+  00:00 : sleep 
+  06:00 : Get up 
+  07:00 : school
+  14:00 : At home 
+  15:00 : offline 
+  18:00 : online 
+  22:00 : offline
+
+Wednesday
+  00:00 : sleep 
+  06:00 : Get up 
+  07:00 : school
+  14:00 : At home 
+  15:00 : offline 
+  15:30 : Extracurricular
+  18:00 : online 
+  22:00 : offline
+
+Thursday
+  00:00 : sleep 
+  06:00 : Get up 
+  07:00 : school
+  14:00 : At home 
+  15:00 : offline 
+  18:00 : online 
+  22:00 : offline
+
+Friday 
+  00:00 : sleep 
+  06:00 : Get up 
+  07:00 : school
+  12:30 : At home 
+  15:00 : offline 
+  18:00 : online 
+  23:00 : offline
+
+Saturday 
+  00:00 : offline 
+  01:00 : sleep 
+  09:00 : Get up
+  10:00 : offline 
+  15:00 : online 
+  23:30 : offline
+
+Sunday
+  00:00 : offline 
+  01:00 : sleep 
+  09:00 : Get up
+  10:00 : offline 
+  15:00 : online 
+  22:00 : offline
+
+
+Offline means active but doesn't want to be disturbed
+
+Active online and can be contacted
+
+The rest, are not active
+  </pre>
+</div>
+
+<script>
+const schedule = {
+  1: [ 
+    ["00:00", "sleep"], ["06:00", "Get up"], ["07:00", "school"],
+    ["15:00", "At home"], ["15:45", "offline"], ["18:00", "online"], ["22:00", "offline"]
+  ],
+  2: [ 
+    ["00:00", "sleep"], ["06:00", "Get up"], ["07:00", "school"],
+    ["14:00", "At home"], ["15:00", "offline"], ["18:00", "online"], ["22:00", "offline"]
+  ],
+  3: [
+    ["00:00", "sleep"], ["06:00", "Get up"], ["07:00", "school"],
+    ["14:00", "At home"], ["15:00", "offline"], ["15:30", "Extracurricular"],
+    ["18:00", "online"], ["22:00", "offline"]
+  ],
+  4: [
+    ["00:00", "sleep"], ["06:00", "Get up"], ["07:00", "school"],
+    ["14:00", "At home"], ["15:00", "offline"], ["18:00", "online"], ["22:00", "offline"]
+  ],
+  5: [ 
+    ["00:00", "sleep"], ["06:00", "Get up"], ["07:00", "school"],
+    ["12:30", "At home"], ["15:00", "offline"], ["18:00", "online"], ["23:00", "offline"]
+  ],
+  6: [ 
+    ["00:00", "offline"], ["01:00", "sleep"], ["09:00", "Get up"],
+    ["10:00", "offline"], ["15:00", "online"], ["23:30", "offline"]
+  ],
+  0: [
+    ["00:00", "offline"], ["01:00", "sleep"], ["09:00", "Get up"],
+    ["10:00", "offline"], ["15:00", "online"], ["22:00", "offline"]
+  ]
+};
+
+function updateActivity() {
+  const now = new Date();
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const gmt7 = new Date(utc + (7 * 3600000));
+
+  const day = gmt7.getDay(); 
+  const hours = String(gmt7.getHours()).padStart(2, "0");
+  const minutes = String(gmt7.getMinutes()).padStart(2, "0");
+  const currentTimeStr = `${hours}:${minutes}`;
+
+  const todaySchedule = schedule[day];
+  let currentActivity = todaySchedule[0][1]; 
+
+  for (let i = 0; i < todaySchedule.length; i++) {
+    if (currentTimeStr >= todaySchedule[i][0]) {
+      currentActivity = todaySchedule[i][1];
+    } else {
+      break;
+    }
+  }
+
+  document.getElementById("activityText").textContent = currentActivity;
+}
+
+setInterval(updateActivity, 1000);
+updateActivity();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Countdown Timer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: #1e1e1e;
+    color: #f0f0f0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+  }
+  .card {
+    width: 100%;
+    max-width: 640px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    padding: 24px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  p.sub {
+    opacity: 0.8;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .display {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 2px;
+    font-size: clamp(40px, 9vw, 72px);
+    font-weight: 800;
+    text-align: center;
+    margin: 16px 0 8px;
+    user-select: none;
+  }
+  .inputs {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .inputs div {
+    text-align: center;
+  }
+  label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  input {
+    width: 80px;
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(0,0,0,0.4);
+    color: white;
+    text-align: center;
+  }
+  .btns {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  button {
+    appearance: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: linear-gradient(120deg, #000, #333);
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease, background .2s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,.25);
+    min-width: 120px;
+  }
+  button:hover { transform: translateY(-1px); }
+  button:active { transform: translateY(0); }
+  button.secondary {
+    background: transparent;
+    border-color: rgba(255,255,255,0.35);
+  }
+  .footer {
+    margin-top: 22px;
+    text-align: center;
+    font-size: 12px;
+    opacity: .6;
+  }
+</style>
+</head>
+<body>
+<main class="card" role="main" aria-labelledby="title">
+  <h1 id="title">Countdown Timer</h1>
+
+  <div class="inputs">
+    <div>
+      <label for="hourInput">Hours</label>
+      <input type="number" id="hourInput" min="0" max="99" value="0">
+    </div>
+    <div>
+      <label for="minInput">Minutes</label>
+      <input type="number" id="minInput" min="0" max="59" value="0">
+    </div>
+    <div>
+      <label for="secInput">Seconds</label>
+      <input type="number" id="secInput" min="0" max="59" value="0">
+    </div>
+  </div>
+
+  <div id="timerDisplay" class="display" aria-live="polite" aria-atomic="true">00:00:00</div>
+
+  <div class="btns">
+    <button id="startPauseBtn" aria-pressed="false">Start</button>
+    <button id="resetBtn" class="secondary" style="display:none">Reset</button>
+  </div>
+</main>
+
+<script>
+let totalSeconds = 0;
+let remainingSeconds = 0;
+let interval = null;
+let running = false;
+
+const display = document.getElementById('timerDisplay');
+const startPauseBtn = document.getElementById('startPauseBtn');
+const resetBtn = document.getElementById('resetBtn');
+const hourInput = document.getElementById('hourInput');
+const minInput = document.getElementById('minInput');
+const secInput = document.getElementById('secInput');
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+function render() {
+  const h = Math.floor(remainingSeconds / 3600);
+  const m = Math.floor((remainingSeconds % 3600) / 60);
+  const s = remainingSeconds % 60;
+  display.textContent = `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
+}
+
+function start() {
+  if (remainingSeconds <= 0) {
+    const hours = Math.min(parseInt(hourInput.value) || 0, 99);
+    const minutes = Math.min(parseInt(minInput.value) || 0, 59);
+    const seconds = Math.min(parseInt(secInput.value) || 0, 59);
+    totalSeconds = hours * 3600 + minutes * 60 + seconds;
+    remainingSeconds = totalSeconds;
+    if (remainingSeconds <= 0) return;
+  }
+  if (running) return;
+  running = true;
+  startPauseBtn.textContent = 'Pause';
+  tick();
+  interval = setInterval(tick, 1000);
+  resetBtn.style.display = 'none';
+}
+
+function tick() {
+  if (remainingSeconds > 0) {
+    remainingSeconds--;
+    render();
+  } else {
+    pause();
+    alert('Time is up!');
+  }
+}
+
+function pause() {
+  clearInterval(interval);
+  running = false;
+  startPauseBtn.textContent = 'Start';
+  resetBtn.style.display = 'inline-block';
+}
+
+function reset() {
+  clearInterval(interval);
+  running = false;
+  remainingSeconds = 0;
+  render();
+  startPauseBtn.textContent = 'Start';
+  resetBtn.style.display = 'none';
+}
+
+startPauseBtn.addEventListener('click', () => running ? pause() : start());
+resetBtn.addEventListener('click', reset);
+
+render();
+</script>
+</body>
+</html>
