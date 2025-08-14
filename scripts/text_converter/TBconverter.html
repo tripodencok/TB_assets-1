@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>TB Text Converter</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;font-weight: bold;
+    background: #1e1e1e;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  h1 {
+    text-align: center;
+    padding: 20px;
+    font-size: 32px;
+    border-bottom: 2px solid #333;
+  }
+
+  h2 {
+    text-align: center;
+    margin-top: 20px;
+    font-weight: 600;
+  }
+
+  .section {
+    display: none;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .section.active {
+    display: block;
+  }
+
+  .button {
+    display: block;
+    width: 80%;
+    margin: 15px auto;
+    font-size: 16px;
+    background: #2a2a2a;
+      border-radius: 10px;
+      padding: 15px;
+    color: white;
+    border: 1px solid #444;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+  }
+
+  .button:hover {
+    background: #292929;
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+  }
+
+  .back-btn {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    font-size: 26px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+  }
+
+  .input-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+  }
+
+  .input-box {
+    text-align: center;
+    margin: 10px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+
+  input, textarea, select {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #444;
+    background-color: #111;
+    color: white;
+    font-size: 15px;
+    width: 100%;
+    max-width: 500px;
+    outline: none;
+    transition: 0.2s ease;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: white;
+    background-color: #1a1a1a;
+  }
+
+  textarea {
+    resize: none;
+    height: 100px;
+    margin-top: 20px;
+  }
+
+  .output-box {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 20px;
+    color: white;
+    font-size: 15px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  .nav {
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    padding: 15px 0;
+    border-bottom: 2px solid #333;
+  }
+
+  .nav div {
+    margin: 0 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    position: relative;
+    color: white;
+    padding-bottom: 5px;
+  }
+
+  .nav div.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: white;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  #boardContainer div {
+  user-select: none;
+}
+
+#boardContainer {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin: 20px auto;
+  max-width: 100vw;
+  touch-action: manipulation;
+}
+</style>
+</head>
+<body>
+
+  <div class="nav">
+    <div id="codeTab" class="active">text to code</div>
+    <div id="textTab">code to text</div>
+  </div>
+
+  <div class="container">
+    <div id="codeMode">
+      <div style="text-align:center;">Convert text to code</div>
+      <textarea id="textInput" placeholder="Type the text you want to convert..."></textarea>
+      <button class="button" onclick="convertToCode()">Convert</button>
+      <button class="button" id="copyCodeBtn" onclick="copyResult('codeResult','copyCodeBtn')">Copy</button>
+      <div id="codeResult" class="output-box"></div>
+    </div>
+
+    <div id="textMode" class="hidden">
+      <div style="text-align:center;">Convert code to text</div>
+      <textarea id="codeInput" placeholder="Type the code you want to convert..."></textarea>
+      <button class="button" onclick="convertToText()">Convert</button>
+      <button class="button" id="copyTextBtn" onclick="copyResult('textResult','copyTextBtn')">Copy</button>
+      <div id="textResult" class="output-box"></div>
+    </div>
+  </div>
+
+  <script>
+    const tokens = [
+      "#k,^xfaixcz4.._uZI", "xHbw-rc8 .zleuemiY", "5c,&Nb $LAffg*E7uu", "rkleZ*3a2.TbzS.M,U",
+      "fv-vA.7w vhkm#lJje", "3.uy -hyEnoosy7l d", "Yjoj.9wUox4*#,fbs.", "xyXx08?jiqgoYyfM8,",
+      "bwcak-aBu7C .ehmuP", "zmz^,1oxXxaz.xh,gk", "oxcgp=ISgh9,Fks+sn", "x,u-kDoz0ayuvI^o+5",
+      "xLM,,c=p=$,y14OxnA", "qQBTpA 4tyvpe%Irui", "or,tyYq.eE0y7buq+x", "EBvqN.dtt_6iBici p"
+    ];
+
+    function getRandomToken() {
+      return tokens[Math.floor(Math.random() * tokens.length)];
+    }
+
+    document.getElementById('codeTab').onclick = () => {
+      document.getElementById('codeMode').classList.remove('hidden');
+      document.getElementById('textMode').classList.add('hidden');
+      document.getElementById('codeTab').classList.add('active');
+      document.getElementById('textTab').classList.remove('active');
+    };
+
+    document.getElementById('textTab').onclick = () => {
+      document.getElementById('codeMode').classList.add('hidden');
+      document.getElementById('textMode').classList.remove('hidden');
+      document.getElementById('codeTab').classList.remove('active');
+      document.getElementById('textTab').classList.add('active');
+    };
+
+    function convertToCode() {
+      const input = document.getElementById('textInput').value.replace(/\n/g, 'n\\p');
+      const result = input.split('').map(c => c + getRandomToken()).join('');
+      document.getElementById('codeResult').textContent = result;
+    }
+
+    function convertToText() {
+      let input = document.getElementById('codeInput').value;
+      tokens.forEach(token => {
+        input = input.split(token).join('');
+      });
+      document.getElementById('textResult').textContent = input.replace(/n\\p/g, '\n');
+    }
+
+    function copyResult(resultId, buttonId) {
+      const text = document.getElementById(resultId).textContent;
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById(buttonId);
+        btn.textContent = "Copied";
+        setTimeout(() => { btn.textContent = "Copy"; }, 1500);
+      });
+    }
+  </script>
+</body>
+</html>
