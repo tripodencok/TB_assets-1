@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Text Generator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    font-weight: bold;
+    background: #1e1e1e;
+    color: #fff;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  h1 { text-align: center; padding: 20px 0; font-size: 32px; border-bottom: 2px solid #333; margin-bottom: 30px; }
+  .option { display: flex; align-items: center; gap: 10px; margin: 12px 0; flex-wrap: wrap; }
+  .option label:first-child { flex: 1; min-width: 80px; }
+  input[type="text"] {
+    padding: 8px; border-radius: 8px; border: 1px solid #444; background-color: #111; color: white;
+    font-size: 15px; width: 100px; text-align: center;
+  }
+  .switch { position: relative; display: inline-block; width: 46px; height: 24px; flex-shrink: 0; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #444; transition: .3s; border-radius: 24px;
+  }
+  .slider:before {
+    position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+    background-color: white; transition: .3s; border-radius: 50%;
+  }
+  input:checked + .slider { background-color: #00bfff; }
+  input:checked + .slider:before { transform: translateX(22px); }
+  .button {
+    display: block; width: 100%; max-width: 200px; margin: 15px auto; padding: 12px; font-size: 16px;
+    background: #2a2a2a; color: white; border: 1px solid #444;
+    border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+  }
+  .button:hover { background: #292929; transform: scale(1.03); box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1); }
+  .output-box {
+    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2); backdrop-filter: blur(8px);
+    border-radius: 12px; padding: 16px; margin-top: 20px; color: white; font-size: 15px;
+    text-align: center; white-space: pre-wrap; word-break: break-word;
+  }
+</style>
+</head>
+<body>
+
+<h1>Random Text Generator</h1>
+
+<div class="option">
+  <label>Lowercase:</label>
+  <label class="switch"><input type="checkbox" id="lower"><span class="slider"></span></label>
+  <input type="text" id="lowerLength" placeholder="ex: 5 or 3-7">
+</div>
+
+<div class="option">
+  <label>Uppercase:</label>
+  <label class="switch"><input type="checkbox" id="upper"><span class="slider"></span></label>
+  <input type="text" id="upperLength" placeholder="ex: 5 or 3-7">
+</div>
+
+<div class="option">
+  <label>Space:</label>
+  <label class="switch"><input type="checkbox" id="space"><span class="slider"></span></label>
+  <input type="text" id="spaceLength" placeholder="ex: 1 or 1-3">
+</div>
+
+<div class="option">
+  <label>Symbol:</label>
+  <label class="switch"><input type="checkbox" id="symbol"><span class="slider"></span></label>
+  <input type="text" id="symbolLength" placeholder="ex: 2 or 1-5">
+</div>
+
+<div class="option">
+  <label>Sign:</label>
+  <label class="switch"><input type="checkbox" id="sign"><span class="slider"></span></label>
+  <input type="text" id="signLength" placeholder="ex: 2 or 1-5">
+</div>
+
+<div class="option">
+  <label>Number:</label>
+  <label class="switch"><input type="checkbox" id="number"><span class="slider"></span></label>
+  <input type="text" id="numberLength" placeholder="ex: 2 or 1-5">
+</div>
+
+<div class="option">
+  <label>Amount:</label>
+  <input type="text" id="amount" placeholder="ex: 10 or 7-12">
+</div>
+
+<button class="button" onclick="generateText()">Generate</button>
+<button id="copyBtn" class="button" style="display:none;" onclick="copyText()">Copy</button>
+
+<div id="output" class="output-box"></div>
+
+<script>
+function allowOnlyNumbers(e) {
+  e.target.value = e.target.value.replace(/[^0-9\-]/g, '');
+}
+
+document.querySelectorAll('input[type="text"]').forEach(input => {
+  input.addEventListener('input', allowOnlyNumbers);
+});
+
+function getMinFromRange(val) {
+  if (!val) return 0;
+  if (val.includes('-')) {
+    let [min] = val.split('-').map(Number);
+    return min || 0;
+  }
+  return parseInt(val) || 0;
+}
+
+function parseLength(val) {
+  if (!val) return 0;
+  if (val.includes('-')) {
+    let [min, max] = val.split('-').map(Number);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  return parseInt(val) || 0;
+}
+
+function generateText() {
+  let lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+  let uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let spaceChar = " ";
+  let symbolChars = "#_&-+()/:;~`|•√π÷×§∆\\}{=°^¥€¢£%©®™✓[]<>";
+  let signChars = ".,?!*'\"";
+  let numberChars = "0123456789";
+
+  const categories = [
+    { id: "lower", chars: lowercaseChars, lengthId: "lowerLength" },
+    { id: "upper", chars: uppercaseChars, lengthId: "upperLength" },
+    { id: "space", chars: spaceChar, lengthId: "spaceLength" },
+    { id: "symbol", chars: symbolChars, lengthId: "symbolLength" },
+    { id: "sign", chars: signChars, lengthId: "signLength" },
+    { id: "number", chars: numberChars, lengthId: "numberLength" }
+  ];
+
+  let totalMinRequired = 0;
+  let pool = "";
+
+  categories.forEach(cat => {
+    if (document.getElementById(cat.id).checked) {
+      let minLen = getMinFromRange(document.getElementById(cat.lengthId).value);
+      totalMinRequired += minLen;
+      pool += cat.chars.repeat(parseLength(document.getElementById(cat.lengthId).value));
+    }
+  });
+
+  let amountVal = document.getElementById("amount").value;
+  let amountMin = getMinFromRange(amountVal);
+  let length = parseLength(amountVal);
+
+  if (pool.length === 0 || length <= 0) {
+    document.getElementById("output").textContent = "Please enable at least one category and set length.";
+    return;
+  }
+  if (amountMin < totalMinRequired) {
+    document.getElementById("output").textContent = "Amount insufficient or input excessive";
+    return;
+  }
+
+  let generated = "";
+  for (let i = 0; i < length; i++) {
+    generated += pool.charAt(Math.floor(Math.random() * pool.length));
+  }
+
+  document.getElementById("output").textContent = generated;
+  document.getElementById("copyBtn").style.display = "block";
+  document.getElementById("copyBtn").textContent = "Copy";
+}
+
+function copyText() {
+  let text = document.getElementById("output").textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    document.getElementById("copyBtn").textContent = "Copied!";
+  });
+}
+</script>
+</body>
+</html>
