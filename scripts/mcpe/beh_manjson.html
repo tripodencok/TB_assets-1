@@ -6,7 +6,6 @@
   <title>Behavior Manifest Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-     /* Gaya yang Diperbarui */
   body {
     font-family: 'Segoe UI', Roboto, Arial, sans-serif;font-weight: bold;
     background: #1e1e1e;
@@ -288,7 +287,7 @@ function generateManifestBehv() {
   const mev = document.getElementById("mf_mevbehv").value.trim() || "1,20,60";
 
   if (!name || !desc) {
-    document.getElementById("manifestResultBehv").textContent = "Nama atau Deskripsi kosong!";
+    document.getElementById("manifestResultBehv").textContent = "Name or Description is empty!";
     return;
   }
 
