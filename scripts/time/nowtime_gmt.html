@@ -7,7 +7,7 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: 'Segoe UI', Roboto, Arial, sans-serif;font-weight: bold;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif; font-weight: bold;
     background: #1e1e1e; color: #fff; font-family: 'Inter', sans-serif;
     min-height: 100vh; padding-bottom: 60px;
   }
@@ -55,6 +55,7 @@
   <thead>
     <tr>
       <th>GMT</th>
+      <th>Date</th>
       <th>Now</th>
     </tr>
   </thead>
@@ -63,33 +64,33 @@
 
 <script>
 const gmtData = {
-  "-12": ["United States (Baker Island, Howland Island)"], 
-  "-11": ["American Samoa (United States)", "Niue"],
-  "-10": ["United States (Hawaii)", "French Polynesia (France)", "Cook Islands (New Zealand)"],
-  "-9": ["United States (Alaska)", "Gambier Islands (French Polynesia)"],
-  "-8": ["United States", "Canada"],
-  "-7": ["United States", "Canada", "Mexico"],
-  "-6": ["Mexico", "Costa Rica", "Guatemala", "El Salvador", "Honduras", "Belize", "Nicaragua"],
-  "-5": ["United States", "Colombia", "Peru", "Ecuador", "Panama", "Jamaica", "Haiti", "Cuba", "Bahamas", "Cayman Islands (UK)"],
-  "-4": ["Venezuela", "Barbados", "Dominica", "Grenada", "Saint Lucia", "Trinidad and Tobago", "Saint Vincent and the Grenadines", "Puerto Rico (US)"],
-  "-3": ["Argentina", "Brazil", "Uruguay", "Paraguay", "Chile (some parts)", "French Guiana (France)", "Suriname"],
-  "-2": ["South Georgia and the South Sandwich Islands (UK)"],
-  "-1": ["Cape Verde", "Azores (Portugal)"],
-  "0": ["United Kingdom", "Ireland", "Portugal", "Iceland", "Morocco", "Gambia", "Ghana", "Guinea", "Senegal", "Western Sahara"],
-  "1": ["France", "Germany", "Spain", "Italy", "Netherlands", "Belgium", "Norway", "Sweden", "Denmark", "Poland", "Switzerland", "Austria", "Czech Republic", "Slovakia", "Hungary", "Algeria", "Nigeria"],
-  "2": ["Greece", "Finland", "South Africa", "Romania", "Bulgaria", "Israel", "Libya", "Turkey", "Egypt", "Sudan"],
-  "3": ["Russia (Moscow)", "Kenya", "Saudi Arabia", "Ethiopia", "Qatar", "Bahrain", "Tanzania", "Iraq"],
-  "4": ["United Arab Emirates", "Oman", "Armenia", "Azerbaijan", "Mauritius", "Georgia"],
-  "5": ["Pakistan", "Uzbekistan", "Maldives", "Tajikistan", "Turkmenistan", "Kazakhstan (West)"],
-  "6": ["Bangladesh", "Kazakhstan (Central)", "Bhutan", "Kyrgyzstan"],
-  "7": ["Indonesia (Western)", "Thailand", "Vietnam", "Cambodia", "Laos"],
-  "8": ["China", "Malaysia", "Singapore", "Philippines", "Brunei", "Indonesia (Central)", "Western Australia (Australia)", "Hong Kong", "Macau", "Taiwan"],
-  "9": ["Japan", "South Korea", "Palau", "Indonesia (Eastern)", "East Timor"],
-  "10": ["Australia (Eastern)", "Papua New Guinea", "Guam (US)", "Northern Mariana Islands (US)"],
-  "11": ["Solomon Islands", "Vanuatu", "New Caledonia (France)", "Kosrae (Micronesia)"],
-  "12": ["Fiji", "New Zealand", "Nauru", "Tuvalu", "Kiribati (Gilbert Islands)", "Marshall Islands"],
-  "13": ["Samoa", "Tokelau (New Zealand)", "Tonga", "Kiribati (Phoenix Islands)"],
-  "14": ["Kiribati (Line Islands)"]
+  "-12": ["United States (Baker Island, Howland Island)"],     
+  "-11": ["American Samoa (United States)", "Niue"],    
+  "-10": ["United States (Hawaii)", "French Polynesia (France)", "Cook Islands (New Zealand)"],    
+  "-9": ["United States (Alaska)", "Gambier Islands (French Polynesia)"],    
+  "-8": ["United States", "Canada"],    
+  "-7": ["United States", "Canada", "Mexico"],    
+  "-6": ["Mexico", "Costa Rica", "Guatemala", "El Salvador", "Honduras", "Belize", "Nicaragua"],    
+  "-5": ["United States", "Colombia", "Peru", "Ecuador", "Panama", "Jamaica", "Haiti", "Cuba", "Bahamas", "Cayman Islands (UK)"],    
+  "-4": ["Venezuela", "Barbados", "Dominica", "Grenada", "Saint Lucia", "Trinidad and Tobago", "Saint Vincent and the Grenadines", "Puerto Rico (US)"],    
+  "-3": ["Argentina", "Brazil", "Uruguay", "Paraguay", "Chile (some parts)", "French Guiana (France)", "Suriname"],    
+  "-2": ["South Georgia and the South Sandwich Islands (UK)"],    
+  "-1": ["Cape Verde", "Azores (Portugal)"],    
+  "0": ["United Kingdom", "Ireland", "Portugal", "Iceland", "Morocco", "Gambia", "Ghana", "Guinea", "Senegal", "Western Sahara"],    
+  "1": ["France", "Germany", "Spain", "Italy", "Netherlands", "Belgium", "Norway", "Sweden", "Denmark", "Poland", "Switzerland", "Austria", "Czech Republic", "Slovakia", "Hungary", "Algeria", "Nigeria"],    
+  "2": ["Greece", "Finland", "South Africa", "Romania", "Bulgaria", "Israel", "Libya", "Turkey", "Egypt", "Sudan"],    
+  "3": ["Russia (Moscow)", "Kenya", "Saudi Arabia", "Ethiopia", "Qatar", "Bahrain", "Tanzania", "Iraq"],    
+  "4": ["United Arab Emirates", "Oman", "Armenia", "Azerbaijan", "Mauritius", "Georgia"],    
+  "5": ["Pakistan", "Uzbekistan", "Maldives", "Tajikistan", "Turkmenistan", "Kazakhstan (West)"],    
+  "6": ["Bangladesh", "Kazakhstan (Central)", "Bhutan", "Kyrgyzstan"],    
+  "7": ["Indonesia (Western)", "Thailand", "Vietnam", "Cambodia", "Laos"],    
+  "8": ["China", "Malaysia", "Singapore", "Philippines", "Brunei", "Indonesia (Central)", "Western Australia (Australia)", "Hong Kong", "Macau", "Taiwan"],    
+  "9": ["Japan", "South Korea", "Palau", "Indonesia (Eastern)", "East Timor"],    
+  "10": ["Australia (Eastern)", "Papua New Guinea", "Guam (US)", "Northern Mariana Islands (US)"],    
+  "11": ["Solomon Islands", "Vanuatu", "New Caledonia (France)", "Kosrae (Micronesia)"],    
+  "12": ["Fiji", "New Zealand", "Nauru", "Tuvalu", "Kiribati (Gilbert Islands)", "Marshall Islands"],    
+  "13": ["Samoa", "Tokelau (New Zealand)", "Tonga", "Kiribati (Phoenix Islands)"],    
+  "14": ["Kiribati (Line Islands)"]    
 };
 
 const select = document.getElementById('gmtSelect');
@@ -126,9 +127,12 @@ function updateTimes() {
   tbody.innerHTML = '';
   Object.keys(gmtData).sort((a,b)=>a-b).forEach(offset => {
     const localTime = new Date(utc + offset * 3600000);
+    const dateStr = localTime.toLocaleDateString();
+    const timeStr = localTime.toLocaleTimeString();
     const row = `<tr>
       <td>GMT${offset >= 0 ? '+'+offset : offset}</td>
-      <td>${localTime.toLocaleTimeString()}</td>
+      <td>${dateStr}</td>
+      <td>${timeStr}</td>
     </tr>`;
     tbody.innerHTML += row;
   });
